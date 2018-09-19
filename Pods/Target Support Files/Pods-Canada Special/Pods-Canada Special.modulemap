@@ -1,0 +1,6 @@
+framework module Pods_Canada_Special {
+  umbrella header "Pods-Canada Special-umbrella.h"
+
+  export *
+  module * { export * }
+}
