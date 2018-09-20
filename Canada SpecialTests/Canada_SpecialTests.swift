@@ -73,6 +73,12 @@ class Canada_SpecialTests: XCTestCase {
 
     }
     
+    // Test Case 5 : Network Reachability
+    func testNetworkReachability() {
+        let isConnected = APIManager.isConnectedToInternet()
+        XCTAssertEqual(isConnected, true)
+    }
+    
     func loadRowsContent() -> [RowsModel] {
         let sampleData1 = RowsModel(title: "Title 1", description: nil, imageHref: "http://test.jpg")
         let sampleData2 = RowsModel(title: nil, description: nil, imageHref: nil)
