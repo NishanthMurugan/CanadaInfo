@@ -27,11 +27,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tableView = UITableView(frame: CGRect.zero, style: .plain)
         self.tableView.delegate = self
         self.tableView.dataSource = self
-        self.tableView.backgroundColor = UIColor(red: 230/255, green: 230/250, blue: 230/250, alpha: 1.0)
+        self.tableView.backgroundColor = UIColor.white
+        self.tableView.separatorColor = UIColor.clear
         self.tableView.rowHeight = UITableViewAutomaticDimension
         self.tableView.estimatedRowHeight = 44
         self.registerTableViewCells()
         self.view.addSubview(self.tableView)
+        
+        // NavigationBar Title Color
+        self.navigationController?.navigationBar.barTintColor = UIColor(red: 0, green: 0.67, blue: 0.56, alpha: 1)
+        let textAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
+        navigationController?.navigationBar.titleTextAttributes = textAttributes
+        self.navigationController?.navigationBar.isTranslucent = false
         
         // Add constraints to tableview
         setConstraintsToTableView()
@@ -67,24 +74,25 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func makeApiCall() {
+        weak var weakSelf = self
         let completionHandler: (Result<InfoModel>) -> Void = {result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
                     if let appTitle = result.value?.title {
-                        self.title = appTitle
+                        weakSelf?.title = appTitle
                     }
                     if let rawData = result.value?.rows {
-                        self.detailItems = self.removeInvalidContent(rawContent: rawData as! [RowsModel])
-                        self.tableView.reloadData()
+                        weakSelf?.detailItems = self.removeInvalidContent(rawContent: rawData as! [RowsModel])
+                        weakSelf?.tableView.reloadData()
                     }
                 case .failure:
                     // Handle Negative Scenerio
-                    self.showAlert(message: (result.error?.localizedDescription)!)
+                    weakSelf?.showAlert(message: (result.error?.localizedDescription)!)
                 }
                 // Stop pull-to-refresh spinner
-                if self.refreshControl.isRefreshing {
-                    self.refreshControl.endRefreshing()
+                if (weakSelf?.refreshControl.isRefreshing)! {
+                    weakSelf?.refreshControl.endRefreshing()
                 }
             }
         }
