@@ -8,6 +8,7 @@
 
 import XCTest
 import Foundation
+import Alamofire
 @testable import Canada_Special
 
 class Canada_SpecialTests: XCTestCase {
@@ -77,6 +78,40 @@ class Canada_SpecialTests: XCTestCase {
     func testNetworkReachability() {
         let isConnected = APIManager.isConnectedToInternet()
         XCTAssertEqual(isConnected, true)
+    }
+    
+    // Test Case 6 : API call Validation
+    func testAPICall() {
+        let apiExpectation = expectation(description: "APICall")
+        let completionHandler: (Result<InfoModel>) -> Void = {result in
+            
+            // Validate Result
+            XCTAssertNotNil(result)
+            
+            // Validate Success case
+            XCTAssertEqual(result.isSuccess, true)
+            
+            // Validate Response Value
+            XCTAssertNotNil(result.value)
+            
+            // Validate title
+            XCTAssertNotNil(result.value?.title)
+            
+            // Validate rows
+            XCTAssertGreaterThan(result.value!.rows.count, 0)
+            
+            // Validate error
+            XCTAssertNil(result.error)
+            
+            apiExpectation.fulfill()
+        }
+
+        APIManager.makeApiCall(completionHandler: completionHandler)
+        waitForExpectations(timeout: 30) { error in
+            if let error = error {
+                XCTFail("Error: \(error)")
+            }
+        }
     }
     
     func loadRowsContent() -> [RowsModel] {
